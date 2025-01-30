@@ -17,12 +17,12 @@ func (g *Gateway) validateConnection(conn net.Conn) bool {
 
 		if ipAddress == validIpAddress {
 
-			logger.Debug("[gateway] accepted new connection from ip address" + ipAddress).Log()
+			logger.Debug("[gateway] accepted new connection from ip address " + ipAddress).Log()
 			return true
 		}
 	}
 
-	logger.Debug("[gateway] rejected new connection from ip address" + ipAddress).Log()
+	logger.Debug("[gateway] rejected new connection from ip address " + ipAddress).Log()
 	return false
 }
 

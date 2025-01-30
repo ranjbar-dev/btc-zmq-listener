@@ -15,6 +15,13 @@ func GatewayPort() string {
 	return "8000"
 }
 
+func GatewayWhiteListIps() []string {
+
+	return []string{
+		"",
+	}
+}
+
 func ZmqAddress() string {
 
 	return "tcp://127.0.0.1:28332"

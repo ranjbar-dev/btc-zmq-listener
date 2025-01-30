@@ -1,17 +1,29 @@
 package gateway
 
 import (
+	"btczmq/config"
+	"btczmq/tools/logger"
 	"btczmq/types"
-	"fmt"
 	"net"
+	"strings"
 )
 
 func (g *Gateway) validateConnection(conn net.Conn) bool {
 
-	fmt.Println("LocalAddr", conn.LocalAddr().String())
-	fmt.Println("RemoteAddr", conn.RemoteAddr().String())
+	splitted := strings.Split(conn.RemoteAddr().String(), ":")
+	ipAddress := splitted[0]
 
-	return true
+	for _, validIpAddress := range config.GatewayWhiteListIps() {
+
+		if ipAddress == validIpAddress {
+
+			logger.Debug("[gateway] accepted new connection from ip address" + ipAddress).Log()
+			return true
+		}
+	}
+
+	logger.Debug("[gateway] rejected new connection from ip address" + ipAddress).Log()
+	return false
 }
 
 func (g *Gateway) onConnectionOpenned(conn net.Conn) {

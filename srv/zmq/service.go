@@ -14,7 +14,7 @@ type Zmq struct {
 
 func (z *Zmq) Start() {
 
-	go z.g.Start()
+	go z.SubscribeToNewTransactions()
 }
 
 func NewZmq(ctx context.Context, g *gateway.Gateway) *Zmq {

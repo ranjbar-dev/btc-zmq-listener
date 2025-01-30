@@ -4,13 +4,14 @@ import (
 	"btczmq/tools/decoder"
 	"btczmq/tools/logger"
 	"encoding/hex"
-	"fmt"
 	"time"
 
 	"github.com/go-zeromq/zmq4"
 )
 
-func (z *Zmq) SubscribeToNewTransactions() error {
+func (z *Zmq) SubscribeToNewTransactions() {
+
+	logger.Info("[zmq] subscribing to new transactions").Log()
 
 	// Create a new SUB socket
 	subscriber := zmq4.NewSub(z.ctx)
@@ -20,15 +21,19 @@ func (z *Zmq) SubscribeToNewTransactions() error {
 	err := subscriber.Dial(z.address)
 	if err != nil {
 
-		return fmt.Errorf("failed to dial: %v", err)
+		logger.Info("[zmq] failed to dial").Message(err.Error()).Log()
+		return
 	}
 
 	// Subscribe to all messages (empty topic)
 	err = subscriber.SetOption(zmq4.OptionSubscribe, "")
 	if err != nil {
 
-		return fmt.Errorf("failed to subscribe: %v", err)
+		logger.Info("[zmq] failed to subscribe").Message(err.Error()).Log()
+		return
 	}
+
+	logger.Info("[zmq] subscribed to new transactions").Log()
 
 	// Loop to receive messages
 	for {
@@ -37,7 +42,7 @@ func (z *Zmq) SubscribeToNewTransactions() error {
 		msg, err := subscriber.Recv()
 		if err != nil {
 
-			logger.Error("failed to receive message").Message(err.Error()).Log()
+			logger.Error("[zmq] failed to receive message").Message(err.Error()).Log()
 			continue
 		}
 
@@ -47,7 +52,7 @@ func (z *Zmq) SubscribeToNewTransactions() error {
 		transaction, err := decoder.DecodeTransactionHex(rawTxHex)
 		if err != nil {
 
-			logger.Error("failed to decode transaction").Message(err.Error()).Log()
+			logger.Error("[zmq] failed to decode transaction").Message(err.Error()).Log()
 			continue
 		}
 
@@ -55,6 +60,6 @@ func (z *Zmq) SubscribeToNewTransactions() error {
 		z.g.NotifyTransactionToConnections(transaction)
 
 		// Sleep for a short duration to avoid busy-waiting
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(10 * time.Millisecond)
 	}
 }

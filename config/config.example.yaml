@@ -2,8 +2,8 @@ app:
   timezone: "Asia/Tehran"
 
 gateway:
-  host: 0.0.0.0
-  port: 8500
+  host: "0.0.0.0"
+  port: "8500"
   whitelist_ip:
     - "x.x.x.x"
   

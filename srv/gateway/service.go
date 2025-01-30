@@ -4,9 +4,9 @@ import (
 	"btczmq/config"
 	"btczmq/internal/wsserver"
 	"btczmq/tools/logger"
-	"btczmq/types"
 	"context"
 	"net"
+	"sync"
 	"time"
 )
 
@@ -14,11 +14,8 @@ type Gateway struct {
 	ctx      context.Context
 	cancel   context.CancelFunc
 	wsserver *wsserver.WsServer
-	// jobs
-	addConnectionJobs    chan net.Conn
-	removeConnectionJobs chan net.Conn
-	newTransactionJobs   chan types.Transaction
 	// state
+	mutex       sync.Mutex
 	connections []net.Conn
 }
 
@@ -33,9 +30,6 @@ func (g *Gateway) Start() error {
 
 	logger.Info("[gateway] wsserver started").Log()
 
-	// start new go routines to handle jobs
-	go g.handleJobs()
-
 	return nil
 }
 
@@ -48,12 +42,9 @@ func (g *Gateway) Stop() {
 func NewGateway(ctx context.Context, cancel context.CancelFunc) *Gateway {
 
 	g := &Gateway{
-		ctx:                  ctx,
-		cancel:               cancel,
-		wsserver:             nil,
-		addConnectionJobs:    make(chan net.Conn, 100),
-		removeConnectionJobs: make(chan net.Conn, 100),
-		newTransactionJobs:   make(chan types.Transaction, 100),
+		ctx:      ctx,
+		cancel:   cancel,
+		wsserver: nil,
 	}
 
 	g.wsserver = wsserver.NewWsServer(config.GatewayHost(), config.GatewayPort(), g.validateConnection, g.onConnectionOpenned, g.onConnectionClosed, g.onConnectionMessage)

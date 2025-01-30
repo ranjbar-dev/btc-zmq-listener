@@ -1,47 +1,40 @@
 package gateway
 
 import (
-	"btczmq/tools/logger"
 	"btczmq/types"
+	"net"
 )
 
-func (g *Gateway) handleJobs() {
+func (g *Gateway) BroadcastTransction(transaction types.Transaction) {
 
-	logger.Info("[gateway] listening for jobs").Log()
-	for {
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
 
-		select {
+	for _, connection := range g.connections {
 
-		// add connection to the list of connections
-		case conn := <-g.addConnectionJobs:
+		g.wsserver.SendServerMessage(connection, types.NewServerMessage(1, transaction))
+	}
+}
 
-			g.connections = append(g.connections, conn)
+func (g *Gateway) AddConnection(conn net.Conn) {
 
-		// remove connection from the list of connections
-		case conn := <-g.removeConnectionJobs:
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
 
-			for i, client := range g.connections {
+	g.connections = append(g.connections, conn)
+}
 
-				if client == conn {
+func (g *Gateway) RemoveConnection(conn net.Conn) {
 
-					g.connections = append(g.connections[:i], g.connections[i+1:]...)
-					break
-				}
-			}
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
 
-		// send new transaction info to all connections
-		case tx := <-g.newTransactionJobs:
+	for i, client := range g.connections {
 
-			for _, connection := range g.connections {
+		if client == conn {
 
-				g.wsserver.SendServerMessage(connection, types.NewServerMessage(1, tx))
-			}
-
-		// handle g.ctx done
-		case <-g.ctx.Done():
-
-			logger.Info("[gateway] stopped listening for jobs").Log()
-			return
+			g.connections = append(g.connections[:i], g.connections[i+1:]...)
+			break
 		}
 	}
 }

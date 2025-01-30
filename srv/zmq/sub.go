@@ -57,7 +57,7 @@ func (z *Zmq) SubscribeToNewTransactions() {
 		}
 
 		// Notify the transaction to all connections
-		z.g.NotifyTransactionToConnections(transaction)
+		go z.g.BroadcastTransction(transaction)
 
 		// Sleep for a short duration to avoid busy-waiting
 		time.Sleep(10 * time.Millisecond)

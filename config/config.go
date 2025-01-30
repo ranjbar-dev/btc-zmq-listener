@@ -6,62 +6,62 @@ import (
 	"github.com/spf13/viper"
 )
 
-var data map[string]interface{}
+var data *viper.Viper
 
 func init() {
 
-	v := viper.New()
+	data = viper.New()
 
-	v.SetConfigType("yaml")
+	data.SetConfigType("yaml")
 
-	v.AddConfigPath("config")
+	data.AddConfigPath("config")
 
-	v.AutomaticEnv()
+	data.AutomaticEnv()
 
-	v.SetEnvPrefix("engine")
+	data.SetEnvPrefix("engine")
 
-	v.SetEnvKeyReplacer(strings.NewReplacer(":", "_"))
+	data.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	err := v.ReadInConfig()
+	err := data.ReadInConfig()
 	if err != nil {
 
 		panic("error in reading config file: " + err.Error())
 	}
 
-	data = v.AllSettings()
+	data.AllSettings()
 }
 
 func Timezone() string {
 
-	return data["app"].(map[string]interface{})["timezone"].(string)
+	return data.GetString("app.timezone")
 }
 
 func GatewayHost() string {
 
-	return data["gateway"].(map[string]interface{})["host"].(string)
+	return data.GetString("gateway.host")
 }
 
 func GatewayPort() string {
 
-	return data["gateway"].(map[string]interface{})["port"].(string)
+	return data.GetString("gateway.port")
 }
 
 func GatewayWhiteListIps() []string {
 
-	return data["gateway"].(map[string]interface{})["whitelist_ip"].([]string)
+	return data.GetStringSlice("gateway.whitelist_ip")
 }
 
 func ZmqAddress() string {
 
-	return data["zmq"].(map[string]interface{})["address"].(string)
+	return data.GetString("zmq.address")
 }
 
 func TelegramBotToken() string {
 
-	return data["telegram"].(map[string]interface{})["token"].(string)
+	return data.GetString("telegram.token")
 }
 
 func TelegramChatID() int64 {
 
-	return data["telegram"].(map[string]interface{})["chat_id"].(int64)
+	return data.GetInt64("telegram.chat_id")
 }

@@ -5,6 +5,7 @@ import (
 	"btczmq/srv/zmq"
 	"btczmq/tools/logger"
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,6 +18,7 @@ func main() {
 		if err := recover(); err != nil {
 
 			logger.Error("recover function called").Log()
+			fmt.Println(err)
 		}
 	}()
 

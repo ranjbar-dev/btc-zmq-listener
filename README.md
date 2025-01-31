@@ -2,6 +2,10 @@
 
 you can run a bitcoin node on prune mode ( use less Desk and it is configable ) and run this service beside bitcoin node, then you can connect to ws server port 8000 ( confiable on /config folder ) and receive new connections that gets into Bitcoin mempool
 
+add you client ip address to give access to connect to ws server( /config/config.yaml file ).
+
+when client connects to ws server, server pushes latest 1000 pending transactions to client.
+
 screenshot
 ![image](https://github.com/user-attachments/assets/838f6d2f-26e1-45e6-b332-2d4555e3bcb7)
 

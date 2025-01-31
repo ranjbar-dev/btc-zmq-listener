@@ -4,6 +4,7 @@ import (
 	"btczmq/config"
 	"btczmq/internal/wsserver"
 	"btczmq/tools/logger"
+	"btczmq/types"
 	"context"
 	"net"
 	"sync"
@@ -15,8 +16,10 @@ type Gateway struct {
 	cancel   context.CancelFunc
 	wsserver *wsserver.WsServer
 	// state
-	mutex       sync.Mutex
-	connections []net.Conn
+	connectionsMutex  sync.Mutex
+	connections       []net.Conn
+	transactionsMutex sync.Mutex
+	transactions      []types.Transaction
 }
 
 func (g *Gateway) Start() error {
@@ -42,9 +45,10 @@ func (g *Gateway) Stop() {
 func NewGateway(ctx context.Context, cancel context.CancelFunc) *Gateway {
 
 	g := &Gateway{
-		ctx:      ctx,
-		cancel:   cancel,
-		wsserver: nil,
+		ctx:          ctx,
+		cancel:       cancel,
+		wsserver:     nil,
+		transactions: make([]types.Transaction, 0),
 	}
 
 	g.wsserver = wsserver.NewWsServer(config.GatewayHost(), config.GatewayPort(), g.validateConnection, g.onConnectionOpenned, g.onConnectionClosed, g.onConnectionMessage)

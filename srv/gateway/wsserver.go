@@ -29,6 +29,15 @@ func (g *Gateway) validateConnection(conn net.Conn) bool {
 func (g *Gateway) onConnectionOpenned(conn net.Conn) {
 
 	g.AddConnection(conn)
+
+	g.transactionsMutex.Lock()
+	defer g.transactionsMutex.Unlock()
+
+	// send last 1000 transactions
+	for _, transaction := range g.transactions {
+
+		g.wsserver.SendServerMessage(conn, types.NewServerMessage(1, transaction))
+	}
 }
 
 func (g *Gateway) onConnectionClosed(conn net.Conn) {

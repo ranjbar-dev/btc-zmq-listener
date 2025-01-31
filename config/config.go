@@ -65,3 +65,28 @@ func TelegramChatID() int64 {
 
 	return data.GetInt64("telegram.chat_id")
 }
+
+func BitcoinProtocol() string {
+
+	return data.GetString("bitcoin.protocol")
+}
+
+func BitcoinHost() string {
+
+	return data.GetString("bitcoin.host")
+}
+
+func BitcoinPort() string {
+
+	return data.GetString("bitcoin.port")
+}
+
+func BitcoinUser() string {
+
+	return data.GetString("bitcoin.user")
+}
+
+func BitcoinPass() string {
+
+	return data.GetString("bitcoin.password")
+}

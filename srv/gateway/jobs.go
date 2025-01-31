@@ -7,8 +7,18 @@ import (
 
 func (g *Gateway) BroadcastTransction(transaction types.Transaction) {
 
-	g.mutex.Lock()
-	defer g.mutex.Unlock()
+	g.transactionsMutex.Lock()
+	defer g.transactionsMutex.Unlock()
+
+	// always keep last 1000 transactions
+	g.transactions = append(g.transactions, transaction)
+	if len(g.transactions) > 1000 {
+
+		g.transactions = g.transactions[1:]
+	}
+
+	g.connectionsMutex.Lock()
+	defer g.connectionsMutex.Unlock()
 
 	for _, connection := range g.connections {
 
@@ -18,16 +28,16 @@ func (g *Gateway) BroadcastTransction(transaction types.Transaction) {
 
 func (g *Gateway) AddConnection(conn net.Conn) {
 
-	g.mutex.Lock()
-	defer g.mutex.Unlock()
+	g.connectionsMutex.Lock()
+	defer g.connectionsMutex.Unlock()
 
 	g.connections = append(g.connections, conn)
 }
 
 func (g *Gateway) RemoveConnection(conn net.Conn) {
 
-	g.mutex.Lock()
-	defer g.mutex.Unlock()
+	g.connectionsMutex.Lock()
+	defer g.connectionsMutex.Unlock()
 
 	for i, client := range g.connections {
 

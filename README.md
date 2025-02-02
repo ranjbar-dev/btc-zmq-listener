@@ -32,3 +32,13 @@ new transction data example:
     }
 }
 ```
+
+### Build binary 
+
+`go build -o ./build/main ./cmd/main.go`
+
+
+### Run binary 
+
+`./build/main /path-to-src/config/config.yaml`
+

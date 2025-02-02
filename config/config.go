@@ -25,7 +25,7 @@ func init() {
 
 	data.AutomaticEnv()
 
-	data.SetEnvPrefix("engine")
+	data.SetEnvPrefix("btczmq")
 
 	data.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 

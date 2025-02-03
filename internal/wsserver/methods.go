@@ -2,6 +2,7 @@ package wsserver
 
 import (
 	"btczmq/tools/logger"
+	"fmt"
 	"io"
 	"net"
 
@@ -22,7 +23,7 @@ func (s *WsServer) listenForConnections(listener net.Listener) (net.Conn, error)
 	if !s.validateConnection(conn) {
 
 		conn.Close()
-		return nil, err
+		return nil, fmt.Errorf("connection validation failed")
 	}
 
 	// upgrade the connection to a WebSocket connection
